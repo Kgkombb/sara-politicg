@@ -1,81 +1,199 @@
-<!DOCTYPE html>
+
+        const monthName = document.getElementById('month-name');<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SARA Politics - สาระการเมือง</title>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;700&display=swap" rel="stylesheet">
+    <title>ปฏิทินวันพระ - โดยเณรปลื้ม</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #c9d1d9; --accent: #58a6ff; }
-        body { background: var(--bg); color: var(--text); font-family: 'Chakra Petch', sans-serif; margin: 0; padding: 0; }
-        nav { background: #010409; padding: 20px; text-align: center; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
-        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 25px; margin-bottom: 25px; transition: 0.3s; }
-        .card:hover { border-color: var(--accent); transform: translateY(-3px); }
-        .tag { color: var(--accent); font-size: 14px; font-weight: bold; margin-bottom: 10px; display: block; }
-        h2 { color: #ffffff; margin: 0 0 15px 0; font-size: 26px; }
-        .content { line-height: 1.8; white-space: pre-wrap; margin-bottom: 20px; }
-        .footer-info { font-size: 13px; color: #8b949e; border-top: 1px solid var(--border); padding-top: 15px; }
-        #loading { text-align: center; font-size: 20px; padding: 50px; color: var(--accent); }
+        :root {
+            --primary: #d4a017;
+            --bg: #f0f2f5;
+            --white: #ffffff;
+            --text: #333;
+            --holy-day-bg: #fff9db;
+        }
+
+        body { 
+            font-family: 'Chakra Petch', sans-serif; 
+            background-color: var(--bg); 
+            margin: 0; padding: 0; 
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        header {
+            background: linear-gradient(135deg, #d4a017, #b8860b);
+            color: white; width: 100%; text-align: center;
+            padding: 30px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .calendar-container {
+            background: var(--white);
+            width: 90%; max-width: 400px;
+            margin: -20px auto 20px auto; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden; padding-bottom: 20px;
+            z-index: 10;
+        }
+
+        .month-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px; font-weight: bold; font-size: 20px; color: var(--primary);
+        }
+
+        .weekdays {
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            text-align: center; font-weight: bold; color: #999;
+            padding-bottom: 10px;
+        }
+
+        .days {
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+        }
+
+        .day {
+            padding: 15px 0; position: relative; cursor: pointer;
+            border-radius: 50%; transition: 0.2s; font-size: 16px;
+            width: 40px; height: 40px; margin: 5px auto;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .day:hover { background: #f0f0f0; }
+
+        .holy-day {
+            background-color: var(--holy-day-bg);
+            color: var(--primary); font-weight: bold;
+            border: 1px solid var(--primary);
+        }
+
+        .holy-day::after {
+            content: '🪷';
+            position: absolute; bottom: -5px; font-size: 10px;
+        }
+
+        .today { background: var(--primary) !important; color: white !important; }
+
+        /* Modal Popup */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+
+        .modal-content {
+            background: white; padding: 30px; border-radius: 20px;
+            width: 80%; max-width: 300px; text-align: center;
+        }
+
+        .btn-close {
+            margin-top: 20px; background: var(--primary);
+            color: white; border: none; padding: 10px 20px;
+            border-radius: 10px; cursor: pointer; font-family: 'Chakra Petch';
+        }
+
+        footer {
+            margin: 20px 0; color: #777; font-size: 14px; text-align: center;
+        }
     </style>
 </head>
 <body>
 
-<nav>
-    <strong style="font-size: 24px; color: var(--accent);">🗳️ SARA POLITICS</strong>
-</nav>
+<header>
+    <h1>ปฏิทินวันพระ วัดสมุหเขตตาราม วัดหัววัง ๒๕๖๙</h1>
+    <p>สืบทอดพระพุทธศาสนา วันพระนี้ทำบุญกันนะ</p>
+</header>
 
-<div class="container">
-    <h1 style="color: #fff; border-left: 5px solid var(--accent); padding-left: 15px;">คลังข้อมูลการเมืองไทย</h1>
-    <div id="loading">📡 กำลังเชื่อมต่อฐานข้อมูล...</div>
-    <div id="display-area"></div>
+<div class="calendar-container">
+    <div class="month-header">
+        <button style="border:none; background:none; cursor:pointer;" onclick="prevMonth()">◀</button>
+        <div id="month-name">มีนาคม 2569</div>
+        <button style="border:none; background:none; cursor:pointer;" onclick="nextMonth()">▶</button>
+    </div>
+    
+    <div class="weekdays">
+        <div style="color: #e74c3c;">อา</div><div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div>ส</div>
+    </div>
+    
+    <div class="days" id="calendar-days"></div>
+</div>
+
+<footer>
+    สร้างสรรค์โดย: <b>เณรปลื้ม</b> 🙏<br>
+    วัดสมุหเขตตาราม วัดหัววัง
+</footer>
+
+<div id="holyModal" class="modal">
+    <div class="modal-content">
+        <h2 style="color: var(--primary);">วันพระมหามงคล 🪷</h2>
+        <p id="holy-detail"></p>
+        <p style="font-style: italic; color: #777;">"ละเว้นความชั่ว ทำความดี ทำจิตใจให้บริสุทธิ์"</p>
+        <button class="btn-close" onclick="closeModal()">รับทราบ</button>
+    </div>
 </div>
 
 <script>
-    // ลิงก์ CSV ของคุณที่ถูกต้อง
-    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSEtvl1MUA4YhMyRFObDpevuxuEGwxidXzA_PigSx4pYpWr92eE9-9afc1bBKS8SUvFPQ6qRdsQYwUz/pub?output=csv';
+    // ข้อมูลวันพระ ปี 2569 (ตัวอย่าง)
+    const holyData = {
+        "2026-03-02": "วันมาฆบูชา (ขึ้น ๑๕ ค่ำ เดือน ๓)",
+        "2026-03-08": "วันพระ (แรม ๘ ค่ำ เดือน ๓)",
+        "2026-03-17": "วันพระ (แรม ๑๕ ค่ำ เดือน ๓)",
+        "2026-03-25": "วันพระ (ขึ้น ๘ ค่ำ เดือน ๔)"
+    };
 
-    async function fetchData() {
-        const area = document.getElementById('display-area');
-        const loader = document.getElementById('loading');
+    let currentDate = new Date(2026, 2, 1); // เริ่มที่ มีนาคม 2569
 
-        try {
-            const response = await fetch(CSV_URL + '&t=' + new Date().getTime());
-            const data = await response.text();
+    function renderCalendar() {
+        const daysContainer = document.getElementById('calendar-days');
+        const monthName = document.getElementById('month-name');
+        daysContainer.innerHTML = '';
+        
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        monthName.innerText = new Intl.DateTimeFormat('th-TH', { month: 'long', year: 'numeric' }).format(currentDate);
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) {
+            daysContainer.appendChild(document.createElement('div'));
+        }
+
+        for (let i = 1; i <= lastDate; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.classList.add('day');
+            dayDiv.innerText = i;
+
+            const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
             
-            // แยกบรรทัด
-            const rows = data.split('\n').slice(1); 
-            
-            loader.style.display = 'none';
-            area.innerHTML = '';
+            if (holyData[dateStr]) {
+                dayDiv.classList.add('holy-day');
+                dayDiv.onclick = () => showModal(holyData[dateStr]);
+            }
 
-            rows.forEach(row => {
-                // แยกคอลัมน์โดยรองรับเครื่องหมายคอมมาในเนื้อหา
-                const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-                
-                if (cols && cols.length >= 2) {
-                    const category = cols[0].replace(/"/g, '');
-                    const title = cols[1].replace(/"/g, '');
-                    const content = cols[2] ? cols[2].replace(/"/g, '') : '';
-                    const author = cols[3] ? cols[3].replace(/"/g, '') : 'แอดมิน';
+            const today = new Date();
+            if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                dayDiv.classList.add('today');
+            }
 
-                    area.innerHTML += `
-                        <div class="card">
-                            <span class="tag"># ${category}</span>
-                            <h2>${title}</h2>
-                            <div class="content">${content}</div>
-                            <div class="footer-info">✍️ เรียบเรียงโดย: <b>${author}</b></div>
-                        </div>
-                    `;
-                }
-            });
-        } catch (err) {
-            loader.innerHTML = "⚠️ ไม่สามารถโหลดข้อมูลได้ (ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต)";
-            console.error(err);
+            daysContainer.appendChild(dayDiv);
         }
     }
 
-    fetchData();
+    function showModal(detail) {
+        document.getElementById('holy-detail').innerText = detail;
+        document.getElementById('holyModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('holyModal').style.display = 'none';
+    }
+
+    function prevMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
+    function nextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); }
+
+    renderCalendar();
 </script>
 
 </body>
